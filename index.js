@@ -13,8 +13,10 @@ const PORT = process.env.PORT;
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("join_room",(data)=>{
+  socket.on("join_room",async(data)=>{
     socket.join(data.roomId)
+    const chats=await Chat.find({roomId:data.roomId});
+    socket.emit("fetchPreviousMsg",chats)
     console.log("roomJoined")
   })
 
