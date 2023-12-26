@@ -5,6 +5,7 @@ require("dotenv").config();
 const socketio = require("socket.io");
 const connected=require('./config/db')
 const server = http.createServer(app);
+const Chat=require('./models/chat')
 
 const io = socketio(server);
 const PORT = process.env.PORT;
@@ -22,7 +23,13 @@ io.on("connection", (socket) => {
     io.emit("msgRcvdOnServer",data);
   })
 
-  socket.on('msgSendOnParticularUser',(data)=>{
+  socket.on('msgSendOnParticularUser', async(data)=>{
+    const obj={
+      name:data.username,
+      content:data.msg,
+      roomId:data.roomId
+    }
+    await Chat.create(obj);
     io.to(data.roomId).emit("msgRcvdOnServer",data);
   })
 
